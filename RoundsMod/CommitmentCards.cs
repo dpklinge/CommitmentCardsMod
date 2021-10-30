@@ -4,6 +4,7 @@ using UnboundLib.Cards;
 using CommitmentCards.Cards;
 using HarmonyLib;
 using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+using CommitmentCards.Scripts;
 
 namespace CommitmentCards
 {
@@ -33,7 +34,11 @@ namespace CommitmentCards
         void Start()
         {
             instance = this;
-            CustomCard.BuildCard<MyCardName>();
+            CustomCard.BuildCard<Copy>();
+            CustomCard.BuildCard<Distill>();
+            CustomCard.BuildCard<Refine>();
+
+            gameObject.GetOrAddComponent<HandManipulator>();
         }
 
     }

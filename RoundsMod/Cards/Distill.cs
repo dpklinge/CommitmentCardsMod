@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CommitmentCards.Cards
 {
-    class Copy : CustomCard
+    class Distill : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -19,14 +19,15 @@ namespace CommitmentCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} OnAddCard called.");
-            var card = HandManipulator.instance.DuplicateRandomCard(player, 1);
-            UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} OnAddCard has completed DuplicateRandomCard with card  {card}.");
-            CommitmentCards.instance.ExecuteAfterSeconds(0.1f,  () => {
+            HandManipulator.instance.RemoveRandomCard(player, 2);
+            CommitmentCards.instance.ExecuteAfterSeconds(0.1f, () =>
+            {
+                HandManipulator.instance.DuplicateRandomCard(player, 3);
+            });
+            CommitmentCards.instance.ExecuteAfterSeconds(0.2f, () => {
                 UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Removing self.");
                 HandManipulator.instance.RemoveCardType(player, ModdingUtils.Utils.Cards.instance.GetCardWithName(GetTitle()));
                 UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Self removed.");
-
             });
             UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
@@ -40,11 +41,11 @@ namespace CommitmentCards.Cards
 
         protected override string GetTitle()
         {
-            return "Copy";
+            return "Distill";
         }
         protected override string GetDescription()
         {
-            return "Creates a copy of a random card with stats in your hand.";
+            return "Removes two card with stats from your hand, and creates three copies of another. (Better have at least three!)";
         }
         protected override GameObject GetCardArt()
         {
@@ -52,7 +53,7 @@ namespace CommitmentCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Rare;
         }
         protected override CardInfoStat[] GetStats()
         {
