@@ -24,6 +24,11 @@ namespace CommitmentCards
         public const string ModInitials = "CC";
         public static CommitmentCards instance { get; private set; }
 
+#if DEBUG
+        public static readonly bool DEBUG = true;
+#else
+        public static readonly bool DEBUG = false;
+#endif
 
         void Awake()
         {
@@ -40,6 +45,14 @@ namespace CommitmentCards
             CustomCard.BuildCard<Hose>();
 
             gameObject.GetOrAddComponent<HandManipulator>();
+        }
+
+        internal static void Log(string message)
+        {
+            if (DEBUG)
+            {
+                CommitmentCards.Log(message);
+            }
         }
 
     }

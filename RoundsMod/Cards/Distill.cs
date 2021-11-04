@@ -14,7 +14,7 @@ namespace CommitmentCards.Cards
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
+            CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -25,16 +25,16 @@ namespace CommitmentCards.Cards
                 HandManipulator.instance.DuplicateRandomCard(player, 3);
             });
             CommitmentCards.instance.ExecuteAfterSeconds(0.2f, () => {
-                UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Removing self.");
+                CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Removing self.");
                 HandManipulator.instance.RemoveCardType(player, ModdingUtils.Utils.Cards.instance.GetCardWithName(GetTitle()));
-                UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Self removed.");
+                CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Self removed.");
             });
-            UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
+            CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been removed from player {player.playerID}.");
+            CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been removed from player {player.playerID}.");
 
             //Run when the card is removed from the player
         }
