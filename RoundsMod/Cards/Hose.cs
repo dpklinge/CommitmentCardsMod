@@ -19,7 +19,7 @@ namespace CommitmentCards.Cards
             gun.damage = .05f;
             gun.reloadTime = .01f;
             gun.projectileSpeed = .66f;
-            UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
+            CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
