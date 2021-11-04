@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using ModdingUtils.Utils;
 
 namespace CommitmentCards.Scripts
 {
@@ -10,10 +11,11 @@ namespace CommitmentCards.Scripts
         public Gun gun;
         void Update()
         {
-            UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] ConstantFire updating");
+            if (this.GetComponent<Player>()!=null && !PlayerStatus.PlayerAliveAndSimulated(this.GetComponent<Player>())) { return; }
+            CommitmentCards.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] ConstantFire updating");
             if (gun.IsReady())
             {
-                UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] ConstantFire gun ready, attacking");
+                CommitmentCards.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] ConstantFire gun ready, attacking");
                 gun.Attack(1);
             }
         }
