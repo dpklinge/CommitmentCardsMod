@@ -67,7 +67,7 @@ namespace CommitmentCards.Cards
                 {
                     positive = false,
                     stat = "Damage",
-                    amount = "-90%",
+                    amount = "-95%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                  new CardInfoStat()
