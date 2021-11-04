@@ -21,7 +21,7 @@ namespace CommitmentCards.Cards
             gun.projectileSpeed = .66f;
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
-        }
+        } 
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             var constantFire = player.gameObject.AddComponent<ConstantFire>();
