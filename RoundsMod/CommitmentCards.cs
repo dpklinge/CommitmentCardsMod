@@ -37,6 +37,7 @@ namespace CommitmentCards
             CustomCard.BuildCard<Copy>();
             CustomCard.BuildCard<Distill>();
             CustomCard.BuildCard<Refine>();
+            CustomCard.BuildCard<Hose>();
 
             gameObject.GetOrAddComponent<HandManipulator>();
         }
