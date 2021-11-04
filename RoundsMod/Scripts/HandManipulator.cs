@@ -54,7 +54,7 @@ namespace CommitmentCards.Scripts
         {
             UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] HandManipulator SelectRandomCardWithStats called with player {player}");
             player.data.currentCards.ForEach(card => UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] HandManipulator Currently held card regardles of stats: {card}"));
-            var cards = player.data.currentCards.Where(card => card.cardStats.Length > 0).ToList();
+            var cards = player.data.currentCards.Where(card => card.cardStats.Length > 0 && ModdingUtils.Utils.Cards.instance.PlayerIsAllowedCard(player, card)).ToList();
             UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] HandManipulator SelectRandomCardWithStats Currently held card with stats: {cards}");
             cards.ForEach(card => UnityEngine.Debug.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] HandManipulator card: {card}"));
             
