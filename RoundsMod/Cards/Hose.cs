@@ -15,13 +15,14 @@ namespace CommitmentCards.Cards
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.allowMultiple = false;
-            gun.attackSpeed = 0.5f;
-            gun.damage = .05f;
+            gun.attackSpeed = .75f;
+            gun.damage = .1f;
+            gun.bulletDamageMultiplier = 0.25f;
             gun.reloadTime = .01f;
-            gun.projectileSpeed = .66f;
+            gun.projectileSpeed = .5f;
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
-        } 
+        }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             var constantFire = player.gameObject.AddComponent<ConstantFire>();
@@ -42,7 +43,7 @@ namespace CommitmentCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Constantly spray a stream of weak bullets";
+            return "Constantly spray a stream of weak bullets.";
         }
         protected override GameObject GetCardArt()
         {
@@ -60,21 +61,28 @@ namespace CommitmentCards.Cards
                 {
                     positive = false,
                     stat = "Bullet speed",
-                    amount = "-33%",
+                    amount = "-50%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Damage",
-                    amount = "-95%",
+                    amount = "Small",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Shots per second cap",
+                    amount = "5/s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                  new CardInfoStat()
                 {
                     positive = true,
                     stat = "Attack speed",
-                    amount = "+50%",
+                    amount = "+25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                  new CardInfoStat()
@@ -82,6 +90,13 @@ namespace CommitmentCards.Cards
                     positive = true,
                     stat = "Reload speed",
                     amount = "Almost instant",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                 new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Fires constantly",
+                    amount = "Like, all the time",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

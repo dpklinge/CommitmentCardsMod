@@ -12,6 +12,12 @@ namespace CommitmentCards.Scripts
         void Update()
         {
             if (this.GetComponent<Player>()!=null && !PlayerStatus.PlayerAliveAndSimulated(this.GetComponent<Player>())) { return; }
+            UnityEngine.Debug.Log("Gun attack speed: " + gun.attackSpeed + " and multiplier: " + gun.attackSpeedMultiplier +" and damage "+gun.damage+" and damage mult "+gun.bulletDamageMultiplier);
+            if (gun.attackSpeed < .15f)
+            {
+                
+                gun.attackSpeed = .15f;
+            }
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] ConstantFire updating");
             if (gun.IsReady())
             {
