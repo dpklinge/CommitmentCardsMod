@@ -74,8 +74,8 @@ namespace CommitmentCards.Cards
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Shots per second cap",
-                    amount = "5/s",
+                    stat = "Attacks per second cap",
+                    amount = "7/s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                  new CardInfoStat()

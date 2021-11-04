@@ -49,7 +49,7 @@ namespace CommitmentCards
 
         internal static void Log(string message)
         {
-            if (true)
+            if (DEBUG)
             {
                 UnityEngine.Debug.Log(message);
             }
