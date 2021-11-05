@@ -11,19 +11,20 @@ using UnityEngine;
 
 namespace CommitmentCards.Cards
 {
-    class ConsolationPrize : CustomCard
+    class LeadMagazine : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.damage = 1.1f;
-            gun.attackSpeed = .9f;
-            gun.projectileSpeed = 1.1f;
-            statModifiers.health = 1.1f;
+            gun.damage = 2;
+            gun.projectileSpeed = .5f;
+            block.additionalBlocks = 1;
+            block.cooldown = .66f;
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
+            gun.gravity *= 20;
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
@@ -36,11 +37,11 @@ namespace CommitmentCards.Cards
 
         protected override string GetTitle()
         {
-            return "ConsolationPrize";
+            return "LeadMagazine";
         }
         protected override string GetDescription()
         {
-            return "Looks like one of your cards didn't do anything. Have some pity stats!";
+            return "Your magazine is full of lead bullets. Helps protect you some, but I hope you didn't like shooting people that weren't right underneath you!";
         }
         protected override GameObject GetCardArt()
         {
@@ -48,53 +49,55 @@ namespace CommitmentCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
             return new CardInfoStat[]{
                 new CardInfoStat()
                 {
-                    positive = true,
-                    stat = "Attack speed",
-                    amount = "+10%",
+                    positive = false,
+                    stat = "Bullet gravity",
+                    amount = "+2000%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
-                    positive = true,
-                    stat = "Health",
-                    amount = "+10%",
+                    positive = false,
+                    stat = "Projectile speed",
+                    amount = "-50%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
                     stat = "Damage",
-                    amount = "+10%",
+                    amount = "+100%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Projectile speed",
-                    amount = "+10%",
+                    stat = "blocks",
+                    amount = "+1",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Block cooldown",
+                    amount = "-33%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.FirepowerYellow;
+            return CardThemeColor.CardThemeColorType.DefensiveBlue;
         }
         public override string GetModName()
         {
             return CommitmentCards.ModInitials;
-        }
-
-        public override bool GetEnabled()
-        {
-            return false;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace CommitmentCards
     {
         private const string ModId = "com.dk.rounds.CommitmentCards";
         private const string ModName = "CommitmentCards";
-        public const string Version = "1.1.0";
+        public const string Version = "1.2.0";
         public const string ModInitials = "CC";
         public static CommitmentCards instance { get; private set; }
 
@@ -37,6 +37,7 @@ namespace CommitmentCards
             CustomCard.BuildCard<Distill>();
             CustomCard.BuildCard<Refine>();
             CustomCard.BuildCard<Hose>();
+            CustomCard.BuildCard<LeadMagazine>();
             CustomCard.BuildCard<ConsolationPrize>((cardInfo) => ModdingUtils.Utils.Cards.instance.AddHiddenCard(cardInfo));
 
             gameObject.GetOrAddComponent<HandManipulator>();
