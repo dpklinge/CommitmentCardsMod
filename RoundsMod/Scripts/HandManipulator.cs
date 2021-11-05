@@ -21,13 +21,25 @@ namespace CommitmentCards.Scripts
             var randomCard = SelectRandomCardWithStats(player);
             if (randomCard == null)
             {
+                for (int i = 0; i < amount; i++)
+                {
+                    HandManipulator.instance.AddCardToPlayer(player, ModdingUtils.Utils.Cards.instance.GetCardWithName("ConsolationPrize"));
+                    Thread.Sleep(100);
+                }
                 return null;
             }
+
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][MonoBehaviour] HandManipulator DuplicateRandomCard selected card: {randomCard} {randomCard.cardName}");
             for (int i=0; i < amount; i++){
-                ModdingUtils.Utils.Cards.instance.AddCardToPlayer(player, randomCard, false, "", 0, 0, true);
+                AddCardToPlayer(player, ModdingUtils.Utils.Cards.instance.GetCardWithName(randomCard.cardName));
+                Thread.Sleep(100);
             }
             return randomCard;
+        }
+        public CardInfo AddCardToPlayer(Player player, CardInfo cardInfo)
+        {
+            ModdingUtils.Utils.Cards.instance.AddCardToPlayer(player, cardInfo, addToCardBar: true);
+            return cardInfo;
         }
         public Player RemoveRandomCard(Player player, int amount)
         {

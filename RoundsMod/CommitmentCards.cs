@@ -24,12 +24,6 @@ namespace CommitmentCards
         public const string ModInitials = "CC";
         public static CommitmentCards instance { get; private set; }
 
-#if DEBUG
-        public static readonly bool DEBUG = true;
-#else
-        public static readonly bool DEBUG = false;
-#endif
-
         void Awake()
         {
             // Use this to call any harmony patch files your mod may have
@@ -43,13 +37,14 @@ namespace CommitmentCards
             CustomCard.BuildCard<Distill>();
             CustomCard.BuildCard<Refine>();
             CustomCard.BuildCard<Hose>();
+            CustomCard.BuildCard<ConsolationPrize>((cardInfo) => ModdingUtils.Utils.Cards.instance.AddHiddenCard(cardInfo));
 
             gameObject.GetOrAddComponent<HandManipulator>();
         }
 
         internal static void Log(string message)
         {
-            if (DEBUG)
+            if (true)
             {
                 UnityEngine.Debug.Log(message);
             }
