@@ -44,7 +44,7 @@ namespace CommitmentCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Creates a copy of a random card with stats in your hand.";
+            return "Creates a copy of a random card with stats in your hand. No viable targets? Have a consolation prize!";
         }
         protected override GameObject GetCardArt()
         {

@@ -46,7 +46,7 @@ namespace CommitmentCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Removes one card with stats from your hand, and creates two copies of another. (Better have at least two!)";
+            return "Removes one card with stats from your hand, and creates two copies of another. If you don't have enough, you'll get some consolation prizes.";
         }
         protected override GameObject GetCardArt()
         {
