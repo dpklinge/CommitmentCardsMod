@@ -1,30 +1,36 @@
-﻿using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+﻿
 using CommitmentCards.Scripts;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnboundLib;
 using UnboundLib.Cards;
 using UnityEngine;
 
 namespace CommitmentCards.Cards
 {
-    class LeadMagazine : CustomCard
+    class DriftMines : CustomCard
     {
+       
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.damage = 2;
-            gun.projectileSpeed = .5f;
-            block.additionalBlocks = 1;
-            block.cooldown = .66f;
+            cardInfo.allowMultiple = false;
+            gun.damage = 1.75f;
+            gun.projectileSpeed = .02f;
+            gun.ammo = 3;
+            gun.attackSpeed = .75f;
+            gun.projectileSize = 2;
+
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
-        {   
-            gun.gravity *= 20;
+        {
+            gun.gravity = 0f;
+            ObjectsToSpawn speedUpBullets = new ObjectsToSpawn() { };
+            speedUpBullets.AddToProjectile = new GameObject("SpeedUpBulletsSpawner", typeof(DriftMineBulletSpawner));
+            List<ObjectsToSpawn> objectsToSpawn = gun.objectsToSpawn.ToList();
+            objectsToSpawn.Add(speedUpBullets);
+            gun.objectsToSpawn = objectsToSpawn.ToArray();
+
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
@@ -37,11 +43,11 @@ namespace CommitmentCards.Cards
 
         protected override string GetTitle()
         {
-            return "Lead Magazine";
+            return "Drift Mines";
         }
         protected override string GetDescription()
         {
-            return "Your magazine is full of lead bullets. Helps protect you some, but I hope you didn't like shooting people that weren't right underneath you!";
+            return "Your bullets become slowly drifting mines. Time to get defensive!";
         }
         protected override GameObject GetCardArt()
         {
@@ -49,7 +55,7 @@ namespace CommitmentCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Uncommon;
+            return CardInfo.Rarity.Common;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -57,36 +63,36 @@ namespace CommitmentCards.Cards
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Bullet gravity",
-                    amount = "+2000%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = false,
                     stat = "Projectile speed",
-                    amount = "-50%",
+                    amount = "Almost none",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
                     stat = "Damage",
-                    amount = "+100%",
+                    amount = "+75%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "blocks",
-                    amount = "+1",
+                    stat = "Bullet gravity",
+                    amount = "None",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Block cooldown",
-                    amount = "-33%",
+                    stat = "Attack speed",
+                    amount = "+25%",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Ammo",
+                    amount = "+3",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

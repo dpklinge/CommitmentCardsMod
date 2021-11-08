@@ -22,12 +22,12 @@ namespace CommitmentCards.Cards
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} OnAddCard called.");
             var card = HandManipulator.instance.DuplicateRandomCard(player, 1);
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} OnAddCard has completed DuplicateRandomCard with card  {card}.");
-            CommitmentCards.instance.ExecuteAfterSeconds(0.1f,  () => {
+            /*CommitmentCards.instance.ExecuteAfterSeconds(0.1f,  () => {
                 CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Removing self.");
                 HandManipulator.instance.RemoveCardType(player, ModdingUtils.Utils.Cards.instance.GetCardWithName(GetTitle()));
                 CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Self removed.");
 
-            });
+            });*/
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }

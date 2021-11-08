@@ -19,15 +19,10 @@ namespace CommitmentCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            HandManipulator.instance.RemoveRandomCard(player, 2);
+            //HandManipulator.instance.RemoveRandomCard(player, 2); disabled pending fix
             CommitmentCards.instance.ExecuteAfterSeconds(0.1f, () =>
             {
-                HandManipulator.instance.DuplicateRandomCard(player, 3);
-            });
-            CommitmentCards.instance.ExecuteAfterSeconds(0.2f, () => {
-                CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Removing self.");
-                HandManipulator.instance.RemoveCardType(player, ModdingUtils.Utils.Cards.instance.GetCardWithName(GetTitle()));
-                CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} Self removed.");
+                HandManipulator.instance.DuplicateRandomCard(player, 2);
             });
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
@@ -35,7 +30,6 @@ namespace CommitmentCards.Cards
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been removed from player {player.playerID}.");
-
             //Run when the card is removed from the player
         }
 
@@ -45,7 +39,7 @@ namespace CommitmentCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Removes two card with stats from your hand, and creates three copies of another. If you don't have enough, you'll get some consolation prizes.";
+            return "Creates two copies of random card with stats in your hand. If you none is available, you'll get some consolation prizes.";
         }
         protected override GameObject GetCardArt()
         {

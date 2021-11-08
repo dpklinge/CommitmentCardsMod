@@ -12,7 +12,9 @@ namespace CommitmentCards.Patches
     {
         private static void Prefix(Player __instance)
         {
-            if (__instance.GetComponent<ConstantFire>() != null) { UnityEngine.GameObject.Destroy(__instance.GetComponent<ConstantFire>()); }
+            CommitmentCards.Log("Looking to delete component");
+
+            if (__instance.GetComponent<ConstantFire>() != null) { CommitmentCards.Log("Deleting component"); UnityEngine.GameObject.Destroy(__instance.GetComponent<ConstantFire>()); }
         }
     }
 }
