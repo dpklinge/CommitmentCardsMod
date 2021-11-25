@@ -1,27 +1,23 @@
 ﻿using UnityEngine;
-using UnboundLib;
 using Photon.Pun;
-using ModdingUtils.Extensions;
-using System.Reflection;
-using System.Collections.Generic;
 
 namespace CommitmentCards.Scripts
 {
-    public class SpeedUpBulletAssets
+    public class DriftMineAssets
     {
-        private static GameObject _DirftMineBullet = null;
+        private static GameObject _DriftMineBullet = null;
 
         internal static GameObject driftMineBullet
         {
             get
             {
-                if (SpeedUpBulletAssets._DirftMineBullet != null) { return SpeedUpBulletAssets._DirftMineBullet; }
+                if (_DriftMineBullet != null) { return _DriftMineBullet; }
                 else
                 {
-                    SpeedUpBulletAssets._DirftMineBullet = new GameObject("Drift_Mine", typeof(DriftMineEffect), typeof(PhotonView));
-                    UnityEngine.GameObject.DontDestroyOnLoad(SpeedUpBulletAssets._DirftMineBullet);
+                    _DriftMineBullet = new GameObject("Drift_Mine", typeof(DriftMineEffect), typeof(PhotonView));
+                    UnityEngine.GameObject.DontDestroyOnLoad(_DriftMineBullet);
 
-                    return SpeedUpBulletAssets._DirftMineBullet;
+                    return _DriftMineBullet;
                 }
             }
             set { }
@@ -36,7 +32,7 @@ namespace CommitmentCards.Scripts
             {
                 if (!Initialized)
                 {
-                    PhotonNetwork.PrefabPool.RegisterPrefab(SpeedUpBulletAssets.driftMineBullet.name, SpeedUpBulletAssets.driftMineBullet);
+                    PhotonNetwork.PrefabPool.RegisterPrefab(DriftMineAssets.driftMineBullet.name, DriftMineAssets.driftMineBullet);
                 }
             }
 
@@ -52,7 +48,7 @@ namespace CommitmentCards.Scripts
 
 
                 PhotonNetwork.Instantiate(
-                    SpeedUpBulletAssets.driftMineBullet.name,
+                    DriftMineAssets.driftMineBullet.name,
                     transform.position,
                     transform.rotation,
                     0,
@@ -60,6 +56,8 @@ namespace CommitmentCards.Scripts
                 );
             }
         }
+
+    // Causes bullets to start at gun tip, not inside body - prevents self-hits with slow bullets
     [RequireComponent(typeof(PhotonView))]
     public class DriftMineEffect : MonoBehaviour, IPunInstantiateMagicCallback
     {
@@ -68,8 +66,6 @@ namespace CommitmentCards.Scripts
             object[] instantiationData = info.photonView.InstantiationData;
             GameObject parent = PhotonView.Find((int)instantiationData[0]).gameObject;
             this.gameObject.transform.SetParent(parent.transform);
-
-
         }
 
         void Awake()
@@ -79,7 +75,8 @@ namespace CommitmentCards.Scripts
         void Start()
         {
             CommitmentCards.Log("Starting DriftMineBulletEffect");
-            this.gameObject.transform.parent.GetComponent<ProjectileHit>().transform.Translate(Vector3.forward*1.5f);
+            var projectile = this.gameObject.transform.parent.GetComponent<ProjectileHit>();
+            projectile.transform.Translate(Vector3.forward * 1.5f);
         }
     }
 }

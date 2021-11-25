@@ -1,29 +1,32 @@
-﻿using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+﻿
 using CommitmentCards.Scripts;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnboundLib;
+using System.Collections.ObjectModel;
+using UnboundLib.Utils;
+using System.Reflection;
 using UnboundLib.Cards;
 using UnityEngine;
+using CommitmentCards.Extensions;
+using HarmonyLib;
 
 namespace CommitmentCards.Cards
 {
-    class ConsolationPrize : CustomCard
+    class ShockBlast : CustomCard
     {
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.damage = 1.15f;
-            gun.attackSpeed = .85f;
-            gun.projectileSpeed = 1.15f;
-            statModifiers.health = 1.15f;
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
+            gun.GetAdditionalData().shockBlastBaseForce += 20000;
+            gun.GetAdditionalData().shockBlastRange += 2;
+            ObjectsToSpawn shockBlast = new ObjectsToSpawn() { };
+            shockBlast.AddToProjectile = new GameObject("ShockBlastSpawner", typeof(ShockBlastSpawner));
+            gun.objectsToSpawn = new ObjectsToSpawn[] { shockBlast };
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
@@ -36,11 +39,11 @@ namespace CommitmentCards.Cards
 
         protected override string GetTitle()
         {
-            return "ConsolationPrize";
+            return "Shock Blast";
         }
         protected override string GetDescription()
         {
-            return "Looks like one of your cards didn't do anything. Have some pity stats!";
+            return "Replace your bullets with a shockwave that damages and repulses enemies! Damage and size scale with bullet damage and projectile speed.";
         }
         protected override GameObject GetCardArt()
         {
@@ -48,53 +51,21 @@ namespace CommitmentCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
             return new CardInfoStat[]{
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Attack speed",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Health",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Damage",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Projectile speed",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.FirepowerYellow;
+            return CardThemeColor.CardThemeColorType.DestructiveRed;
         }
         public override string GetModName()
         {
             return CommitmentCards.ModInitials;
         }
-
-        public override bool GetEnabled()
-        {
-            return false;
-        }
+   
     }
 }

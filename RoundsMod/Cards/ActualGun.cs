@@ -1,29 +1,29 @@
-﻿using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+﻿
 using CommitmentCards.Scripts;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnboundLib;
 using UnboundLib.Cards;
 using UnityEngine;
 
 namespace CommitmentCards.Cards
 {
-    class ConsolationPrize : CustomCard
+    class ActualGun : CustomCard
     {
+       
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.damage = 1.15f;
-            gun.attackSpeed = .85f;
-            gun.projectileSpeed = 1.15f;
-            statModifiers.health = 1.15f;
+            gun.projectileSpeed = 20f;
+            block.cdMultiplier = 5f;
+            block.cooldown =  5f;
+            
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
+            gun.gravity = 0f;
+            gun.projectileColor = Color.gray;
+            gun.reloadTime += 0.5f;
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
@@ -36,11 +36,11 @@ namespace CommitmentCards.Cards
 
         protected override string GetTitle()
         {
-            return "ConsolationPrize";
+            return "An actual gun";
         }
         protected override string GetDescription()
         {
-            return "Looks like one of your cards didn't do anything. Have some pity stats!";
+            return "No more arcing, no more dodging- you're shooting real bullets now!";
         }
         protected override GameObject GetCardArt()
         {
@@ -48,7 +48,7 @@ namespace CommitmentCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -56,29 +56,29 @@ namespace CommitmentCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Attack speed",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Health",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Damage",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
                     stat = "Projectile speed",
-                    amount = "+15%",
+                    amount = "+2000%",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Bullet gravity",
+                    amount = "None",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Reload time",
+                    amount = "+0.5s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Block cooldown",
+                    amount = "Much slower",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
@@ -90,11 +90,6 @@ namespace CommitmentCards.Cards
         public override string GetModName()
         {
             return CommitmentCards.ModInitials;
-        }
-
-        public override bool GetEnabled()
-        {
-            return false;
         }
     }
 }

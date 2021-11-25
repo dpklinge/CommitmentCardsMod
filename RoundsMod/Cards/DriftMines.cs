@@ -1,5 +1,6 @@
 ﻿
 using CommitmentCards.Scripts;
+
 using System.Collections.Generic;
 using System.Linq;
 using UnboundLib.Cards;
@@ -25,12 +26,10 @@ namespace CommitmentCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             gun.gravity = 0f;
-            ObjectsToSpawn speedUpBullets = new ObjectsToSpawn() { };
-            speedUpBullets.AddToProjectile = new GameObject("SpeedUpBulletsSpawner", typeof(DriftMineBulletSpawner));
-            List<ObjectsToSpawn> objectsToSpawn = gun.objectsToSpawn.ToList();
-            objectsToSpawn.Add(speedUpBullets);
-            gun.objectsToSpawn = objectsToSpawn.ToArray();
 
+            ObjectsToSpawn driftMineBullets = new ObjectsToSpawn() { };
+            driftMineBullets.AddToProjectile = new GameObject("DriftMineBulletsSpawner", typeof(DriftMineBulletSpawner));
+            gun.objectsToSpawn = new ObjectsToSpawn[] { driftMineBullets };
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
