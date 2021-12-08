@@ -17,7 +17,7 @@ namespace CommitmentCards
     {
         private const string ModId = "com.dk.rounds.CommitmentCards";
         private const string ModName = "CommitmentCards";
-        public const string Version = "1.5.0";
+        public const string Version = "1.5.1";
         public const string ModInitials = "CC";
         public static CommitmentCards instance { get; private set; }
 
@@ -45,7 +45,7 @@ namespace CommitmentCards
 
         internal static void Log(string message)
         {
-            if (false)
+            if (true)
             {
                 UnityEngine.Debug.Log(message);
             }

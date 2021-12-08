@@ -91,15 +91,20 @@ namespace CommitmentCards.Scripts
         private ProjectileHit projectile;
         public void OnPhotonInstantiate(Photon.Pun.PhotonMessageInfo info)
         {
-            CommitmentCards.Log("Photon instantiate for shockblasteffect");
-            foreach (Transform child in transform)
-            {
-                CommitmentCards.Log("Child: "+child.gameObject);
-            }
+            
             object[] instantiationData = info.photonView.InstantiationData;
             GameObject parent = PhotonView.Find((int)instantiationData[0]).gameObject;
             gameObject.transform.SetParent(parent.transform);
+            CommitmentCards.Log("Photon instantiate for shockblasteffect");
+            foreach (Transform child in gameObject.transform.parent)
+            {
+                CommitmentCards.Log("Children of parent: " + child.gameObject);
+            }
             projectile = gameObject.transform.parent.GetComponent<ProjectileHit>();
+            foreach (Transform child in projectile.transform)
+            {
+                CommitmentCards.Log("Children of projectile: " + child.gameObject);
+            }
             player = projectile.ownPlayer;
             
             gun = player.GetComponent<Holding>().holdable.GetComponent<Gun>();
@@ -122,8 +127,10 @@ namespace CommitmentCards.Scripts
                 DoPush(player.transform.position, target.GetComponent<Damagable>(), gun.GetAdditionalData().shockBlastBaseForce * (gun.damage/2));
             }
 
+            projectile.projectileColor = Color.black;
             projectile.bulletCanDealDeamage = false;
-            projectile.transform.position = (new Vector3(0, 10000f, 10000f));
+            projectile.sendCollisions = false;
+            projectile.transform.position = (new Vector3(-1000f, -10000f, -1000f));
         }
 
         private List<Player> GetInRangeTargets()
@@ -149,7 +156,7 @@ namespace CommitmentCards.Scripts
             CommitmentCards.Log("Damage to be dealt: " + damage);
             CommitmentCards.Log("Health handler exists?" + charData.healthHandler);
             CommitmentCards.Log("Gun damage: " + gun.damage + " bulletDamageMultiplier " + gun.bulletDamageMultiplier + " transform? " + player.transform);
-            charData.healthHandler.CallTakeDamage(Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 4, player.transform.position);
+            charData.healthHandler.CallTakeDamage(Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 3, player.transform.position);
             CommitmentCards.Log("Damage applied, adding force "+force);
             charData.healthHandler.CallTakeForce(((Vector2)damageable.transform.position - point).normalized * force);
             CommitmentCards.Log("Post force");
