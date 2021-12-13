@@ -17,7 +17,7 @@ namespace CommitmentCards
     {
         private const string ModId = "com.dk.rounds.CommitmentCards";
         private const string ModName = "CommitmentCards";
-        public const string Version = "1.5.1";
+        public const string Version = "1.6.0";
         public const string ModInitials = "CC";
         public static CommitmentCards instance { get; private set; }
 
@@ -31,12 +31,11 @@ namespace CommitmentCards
             instance = this;
             CustomCard.BuildCard<Copy>();
             CustomCard.BuildCard<Distill>(); 
-            //CustomCard.BuildCard<Refine>(); Disabled pending fix
             CustomCard.BuildCard<Hose>();
             CustomCard.BuildCard<LeadMagazine>();
             CustomCard.BuildCard<DriftMines>();
             CustomCard.BuildCard<ActualGun>();
-            CommitmentCards.Log("About to build ShockBlast");
+            CustomCard.BuildCard<BattleOfTitans>();
             CustomCard.BuildCard<ShockBlast>();
             CustomCard.BuildCard<ConsolationPrize>((cardInfo) => ModdingUtils.Utils.Cards.instance.AddHiddenCard(cardInfo));
 

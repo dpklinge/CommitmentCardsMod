@@ -15,9 +15,9 @@ namespace CommitmentCards.Cards
         {
             cardInfo.allowMultiple = false;
             gun.damage = 1.75f;
-            gun.projectileSpeed = .02f;
+            gun.projectileSpeed = .05f;
             gun.ammo = 3;
-            gun.attackSpeed = .75f;
+            gun.attackSpeed = .7f;
             gun.projectileSize = 2;
 
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
@@ -84,7 +84,7 @@ namespace CommitmentCards.Cards
                 {
                     positive = true,
                     stat = "Attack speed",
-                    amount = "+25%",
+                    amount = "+30%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
