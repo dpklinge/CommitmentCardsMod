@@ -29,9 +29,9 @@ namespace CommitmentCards.Cards
 
             ObjectsToSpawn driftMineBullets = new ObjectsToSpawn() { };
             driftMineBullets.AddToProjectile = new GameObject("DriftMineBulletsSpawner", typeof(DriftMineBulletSpawner));
-            var objectsToSpawnList = gun.objectsToSpawn.ToList();
-            objectsToSpawnList.Add(driftMineBullets);
-            gun.objectsToSpawn = objectsToSpawnList.ToArray();
+            var objectsToSpawn = gun.objectsToSpawn.ToList();
+            objectsToSpawn.Add(driftMineBullets);
+            gun.objectsToSpawn = objectsToSpawn.ToArray();
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
