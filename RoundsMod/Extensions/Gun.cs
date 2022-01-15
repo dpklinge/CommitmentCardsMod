@@ -11,14 +11,12 @@ namespace CommitmentCards.Extensions
         public int shockBlastBaseForce;
         public float shockBlastRange;
         public float storedSpeed;
-        public int stacksOfMaxReload;
 
         public GunAdditionalData()
         {
             shockBlastBaseForce = 0;
             shockBlastRange = 0;
             storedSpeed = 0;
-            stacksOfMaxReload = 0;
         }
     }
     public static class GunExtension
@@ -49,7 +47,6 @@ namespace CommitmentCards.Extensions
             __instance.GetAdditionalData().shockBlastBaseForce = 0;
             __instance.GetAdditionalData().shockBlastRange = 0;
             __instance.GetAdditionalData().storedSpeed = 0;
-            __instance.GetAdditionalData().stacksOfMaxReload = 0;
         }
     }
 }
