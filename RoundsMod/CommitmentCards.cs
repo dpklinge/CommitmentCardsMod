@@ -17,7 +17,7 @@ namespace CommitmentCards
     {
         private const string ModId = "com.dk.rounds.CommitmentCards";
         private const string ModName = "CommitmentCards";
-        public const string Version = "1.6.2";
+        public const string Version = "1.6.4";
         public const string ModInitials = "CC";
         public static CommitmentCards instance { get; private set; }
 
@@ -37,6 +37,7 @@ namespace CommitmentCards
             CustomCard.BuildCard<ActualGun>();
             CustomCard.BuildCard<BattleOfTitans>();
             CustomCard.BuildCard<ShockBlast>();
+            CustomCard.BuildCard<MaxReload>();
             CustomCard.BuildCard<ConsolationPrize>((cardInfo) => ModdingUtils.Utils.Cards.instance.AddHiddenCard(cardInfo));
 
             gameObject.GetOrAddComponent<HandManipulator>();
@@ -44,7 +45,7 @@ namespace CommitmentCards
 
         internal static void Log(string message)
         {
-            if (true)
+            if (false)
             {
                 UnityEngine.Debug.Log(message);
             }
