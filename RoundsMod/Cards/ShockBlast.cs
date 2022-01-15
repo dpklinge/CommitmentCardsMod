@@ -22,8 +22,8 @@ namespace CommitmentCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.GetAdditionalData().shockBlastBaseForce += 20000;
-            gun.GetAdditionalData().shockBlastRange += 2;
+            gun.GetAdditionalData().shockBlastBaseForce += 10000;
+            gun.GetAdditionalData().shockBlastRange += 2.5f;
             ObjectsToSpawn shockBlast = new ObjectsToSpawn() { };
             shockBlast.AddToProjectile = new GameObject("ShockBlastSpawner", typeof(ShockBlastSpawner));
             gun.objectsToSpawn = new ObjectsToSpawn[] { shockBlast };

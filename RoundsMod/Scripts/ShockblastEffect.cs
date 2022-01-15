@@ -93,7 +93,7 @@ namespace CommitmentCards.Scripts
         {
             
             object[] instantiationData = info.photonView.InstantiationData;
-            GameObject parent = PhotonView.Find((int)instantiationData[0]).gameObject;
+            GameObject parent = PhotonView.Find((int)instantiationData[0]).gameObject; 
             gameObject.transform.SetParent(parent.transform);
             CommitmentCards.Log("Photon instantiate for shockblasteffect");
             foreach (Transform child in gameObject.transform.parent)
@@ -118,13 +118,37 @@ namespace CommitmentCards.Scripts
         {
             CommitmentCards.Log("Starting shockBlastEffect");
             var visual = GenerateVisual();
+            var range = CalculateRange(gun);
             CommitmentCards.Log("Visual generated, triggering");
-            TriggerVisual(visual);
+            TriggerVisual(visual, range);
+
+            CommitmentCards.Log("Getting targets");
+            var targetsInRange = GetInRangeTargets(player.transform.position, range);
             CommitmentCards.Log("Beginning explosion logic");
-            var targetsInRange = GetInRangeTargets();
-            foreach(Player target in targetsInRange)
+            foreach (Collider2D target in targetsInRange)
             {
-                DoPush(player.transform.position, target.GetComponent<Damagable>(), gun.GetAdditionalData().shockBlastBaseForce * (gun.damage/2));
+                CommitmentCards.Log("Checking for rigidbody on collider " + target+" from attachedRigidbody: "+target.attachedRigidbody+" from component in parent: "+target.GetComponentInParent<Rigidbody2D>());
+                var rigidbody = target.GetComponentInParent<Rigidbody2D>();
+                if (rigidbody) {
+                    CommitmentCards.Log("rigidbody found");
+                    DoPushRigidbody(player.transform.position, rigidbody, gun.GetAdditionalData().shockBlastBaseForce * (gun.damage / 2));
+                }
+                else { 
+                CommitmentCards.Log("Checking for player on collider " + target + ": " + target.GetComponentInParent<Player>());
+                    var otherPlayer = target.GetComponentInParent<Player>();
+                    if (otherPlayer)
+                    {
+                        CommitmentCards.Log("player found");
+                        DoPushCharData(player.transform.position, otherPlayer, gun.GetAdditionalData().shockBlastBaseForce * (gun.damage / 2));
+                    }
+                }
+                CommitmentCards.Log("Checking for damageable on collider " + target);
+                var damageable = target.transform.gameObject.GetComponent<Damagable>();
+                if (damageable)
+                {
+                    CommitmentCards.Log("damageable found");
+                    DoDamage(target.GetComponent<Damagable>());
+                }
             }
 
             projectile.projectileColor = Color.black;
@@ -133,34 +157,56 @@ namespace CommitmentCards.Scripts
             projectile.transform.position = (new Vector3(-1000f, -10000f, -1000f));
         }
 
-        private List<Player> GetInRangeTargets()
+        private ISet<Collider2D> GetInRangeTargets(Vector2 origin, float range)
         {
-            List<Player> players = new List<Player>();
-            foreach(Player player in PlayerManager.instance.players.Where(player => player.teamID != this.player.teamID).ToList())
+            ISet<Collider2D> targets = new HashSet<Collider2D>();
+            var colliders = Physics2D.OverlapCircleAll(origin, range);
+            var playerCollider = player.GetComponent<Collider2D>();
+            CommitmentCards.Log("Player collider? " + playerCollider + "At position " + player.transform.position);
+            foreach (Collider2D collider in colliders)
             {
-                CharacterData data = player.GetComponent<CharacterData>();
-                float dist = Vector2.Distance(this.player.GetComponent<CharacterData>().playerVel.position, data.playerVel.position);
-                if (dist <= CalculateRange(gun) && PlayerManager.instance.CanSeePlayer(this.player.transform.position, player).canSee)
+                CommitmentCards.Log("Looking at collider (" + collider + ") for gameobject " + collider.gameObject + " at position " + collider.transform.position);
+                if (!collider.Equals(player.GetComponent<Collider2D>()))
                 {
-                    players.Add(player);
+                    CommitmentCards.Log("Checking if collider (" + collider + ") for gameobject " + collider.gameObject + " is visible");
+                    //Eliminates encountered colliders for anything without a rigidbody except players, which apparently don't have one. Go figure.
+                    var list = Physics2D.RaycastAll(origin, (((Vector2)collider.transform.position) - origin).normalized, range).Select(item => item.collider).Where(item => !item.Equals(playerCollider) && (item.attachedRigidbody || (item.GetComponentInParent<Player>() && item.GetComponentInParent<Player>().playerID != player.playerID))).ToList();
+                    list.ForEach(item => CommitmentCards.Log("raycast item: " + item.gameObject + "is the collider we're looking at? " + (item.Equals(collider))));
+                    if (list.Count > 0 && list[0].Equals(collider))
+                    {
+                        CommitmentCards.Log("Item matched, adding to targets: " + collider.transform.gameObject);
+                        targets.Add(collider);
+                    }
                 }
             }
-            return players;
+            return targets;
         }
 
-        private void DoPush(Vector2 point, Damagable damageable, float force)
+        private void DoPushRigidbody(Vector2 origin, Rigidbody2D rigidbody, float force)
         {
             CommitmentCards.Log("Doing push");
-            var charData = damageable.GetComponent<CharacterData>();
-            var damage = Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 4;
-            CommitmentCards.Log("Damage to be dealt: " + damage);
-            CommitmentCards.Log("Health handler exists?" + charData.healthHandler);
-            CommitmentCards.Log("Gun damage: " + gun.damage + " bulletDamageMultiplier " + gun.bulletDamageMultiplier + " transform? " + player.transform);
-            charData.healthHandler.CallTakeDamage(Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 3, player.transform.position);
-            CommitmentCards.Log("Damage applied, adding force "+force);
-            charData.healthHandler.CallTakeForce(((Vector2)damageable.transform.position - point).normalized * force);
+            CommitmentCards.Log("Adding force " + force + " in direction " + (rigidbody.position - origin).normalized + "For a net value of " + ((rigidbody.position - origin).normalized * force * rigidbody.mass));
+            rigidbody.AddForce((rigidbody.position - origin).normalized * force * rigidbody.mass * 0.75f);
+        }
+
+        private void DoPushCharData(Vector2 origin, Player otherPlayer, float force)
+        {
+            CommitmentCards.Log("Doing push for player");
+            CommitmentCards.Log(" adding force "+force+" for total vector " + ((Vector2)otherPlayer.transform.position - origin).normalized * force*2);
+            var healthHandler = otherPlayer.GetComponentInChildren<HealthHandler>();
+            healthHandler.CallTakeForce(((Vector2)otherPlayer.transform.position - origin).normalized * force*2);
             CommitmentCards.Log("Post force");
         }
+
+        private void DoDamage(Damagable damageable)
+        {
+      
+            CommitmentCards.Log("Doing damage");
+            var totalDamage = Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 1.5f;
+            CommitmentCards.Log("Gun damage: " + gun.damage + " bulletDamageMultiplier " + gun.bulletDamageMultiplier +" Total damage: "+ totalDamage + " transform? " + player.transform);
+            damageable.CallTakeDamage(Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 1.5f, player.transform.position);
+        }
+
 
         private GameObject GenerateVisual()
         {
@@ -190,7 +236,7 @@ namespace CommitmentCards.Scripts
             return _shockblastVisual;
         }
 
-        private void TriggerVisual(GameObject visual)
+        private void TriggerVisual(GameObject visual, float range)
         {
             CommitmentCards.Log("Setting scale");
             visual.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -202,7 +248,7 @@ namespace CommitmentCards.Scripts
                 BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic,
                 null, visual.transform.GetChild(1).GetComponent<LineEffect>(), new object[] { });
             CommitmentCards.Log("Adjusting line effect");
-            visual.transform.GetChild(1).GetComponent<LineEffect>().radius = (CalculateRange(gun));
+            visual.transform.GetChild(1).GetComponent<LineEffect>().radius = (range);
             visual.transform.GetChild(1).GetComponent<LineEffect>().SetFieldValue("startWidth", 0.5f);
             visual.transform.position = player.transform.position;
             CommitmentCards.Log("Playing effect");
@@ -210,9 +256,10 @@ namespace CommitmentCards.Scripts
         }
         private float CalculateRange(Gun gun)
         {
+            var range = gun.GetAdditionalData().shockBlastRange + ((float)Math.Sqrt(gun.projectileSpeed)*1.2f);
             CommitmentCards.Log("gun.projectileSpeed: " + gun.projectileSpeed);
-            CommitmentCards.Log("Range: " + gun.GetAdditionalData().shockBlastRange + ((float)Math.Sqrt(gun.projectileSpeed)*1.5f));
-            return gun.GetAdditionalData().shockBlastRange + ((float)Math.Sqrt(gun.projectileSpeed));
+            CommitmentCards.Log("Range: " + range);
+            return range;
         }
 
 

@@ -27,8 +27,8 @@ namespace CommitmentCards.Cards
                 CommitmentCards.Log("Increasing health of player: "+player.playerID);
                 if (otherPlayer.playerID != player.playerID)
                 {
-                    player.GetComponent<CharacterData>().maxHealth *= 5;
-                    player.GetComponent<CharacterStatModifiers>().sizeMultiplier *= .75f;
+                    otherPlayer.GetComponent<CharacterData>().maxHealth *= 4;
+                    otherPlayer.GetComponent<CharacterStatModifiers>().sizeMultiplier *= .8f;
                 }
             }
             data.maxHealth *= 7.5f;
@@ -66,7 +66,7 @@ namespace CommitmentCards.Cards
                 {
                     positive = true,
                     stat = "Other players health:",
-                    amount = "+500%",
+                    amount = "+400%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
