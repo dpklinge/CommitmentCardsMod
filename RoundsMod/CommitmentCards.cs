@@ -37,7 +37,6 @@ namespace CommitmentCards
             CustomCard.BuildCard<ActualGun>();
             CustomCard.BuildCard<BattleOfTitans>();
             CustomCard.BuildCard<ShockBlast>();
-            CustomCard.BuildCard<MaxReload>();
             CustomCard.BuildCard<ConsolationPrize>((cardInfo) => ModdingUtils.Utils.Cards.instance.AddHiddenCard(cardInfo));
 
             gameObject.GetOrAddComponent<HandManipulator>();
