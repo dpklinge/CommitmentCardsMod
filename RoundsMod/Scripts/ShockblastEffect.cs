@@ -140,6 +140,7 @@ namespace CommitmentCards.Scripts
                     {
                         CommitmentCards.Log("player found");
                         DoPushCharData(player.transform.position, otherPlayer, gun.GetAdditionalData().shockBlastBaseForce * (gun.damage / 2));
+                        ApplyBulletEffects(gun, otherPlayer);
                     }
                 }
                 CommitmentCards.Log("Checking for damageable on collider " + target);
@@ -147,7 +148,7 @@ namespace CommitmentCards.Scripts
                 if (damageable)
                 {
                     CommitmentCards.Log("damageable found");
-                    DoDamage(target.GetComponent<Damagable>());
+                    DoDamage(damageable);
                 }
             }
 
@@ -202,9 +203,16 @@ namespace CommitmentCards.Scripts
         {
       
             CommitmentCards.Log("Doing damage");
-            var totalDamage = Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 1.5f;
+            var totalDamage = 55 * gun.damage * gun.bulletDamageMultiplier / 1.5f;
+            var totalDamageVector = Vector2.up * totalDamage;
             CommitmentCards.Log("Gun damage: " + gun.damage + " bulletDamageMultiplier " + gun.bulletDamageMultiplier +" Total damage: "+ totalDamage + " transform? " + player.transform);
-            damageable.CallTakeDamage(Vector2.up * 55 * gun.damage * gun.bulletDamageMultiplier / 1.5f, player.transform.position);
+            damageable.CallTakeDamage(totalDamageVector, player.transform.position);
+            player.GetComponent<HealthHandler>().Heal(totalDamage * player.GetComponentInChildren<CharacterStatModifiers>().lifeSteal);
+        }
+
+        private void ApplyBulletEffects(Gun gun, Player otherPlayer)
+        {
+            // TODO
         }
 
 

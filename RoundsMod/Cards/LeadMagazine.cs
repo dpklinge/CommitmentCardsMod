@@ -17,7 +17,7 @@ namespace CommitmentCards.Cards
         {
             gun.damage = 2;
             block.additionalBlocks = 1;
-            block.cooldown = .60f;
+            block.cdMultiplier = .60f;
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
         }
