@@ -12,9 +12,8 @@ namespace CommitmentCards.Cards
        
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.projectileSpeed = 10f;
+            gun.projectileSpeed = 5f;
             block.cdMultiplier = 5f;
-            block.cooldown =  2.5f;
             
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been setup.");
             //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
@@ -57,7 +56,7 @@ namespace CommitmentCards.Cards
                 {
                     positive = true,
                     stat = "Projectile speed",
-                    amount = "+1000%",
+                    amount = "+500%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
@@ -78,7 +77,7 @@ namespace CommitmentCards.Cards
                 {
                     positive = false,
                     stat = "Block cooldown",
-                    amount = "+250%",
+                    amount = "+500%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
