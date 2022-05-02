@@ -11,6 +11,7 @@ using UnboundLib.Networking;
 using CommitmentCards.Extensions;
 using System.Collections;
 using HarmonyLib;
+using ModdingUtils.RoundsEffects;
 
 namespace CommitmentCards.Scripts
 {
@@ -125,8 +126,9 @@ namespace CommitmentCards.Scripts
             CommitmentCards.Log("Getting targets");
             var targetsInRange = GetInRangeTargets(player.transform.position, range);
             CommitmentCards.Log("Beginning explosion logic");
-            foreach (Collider2D target in targetsInRange)
+            foreach (RaycastHit2D targetRaycastHit in targetsInRange)
             {
+                var target = targetRaycastHit.collider;
                 CommitmentCards.Log("Checking for rigidbody on collider " + target+" from attachedRigidbody: "+target.attachedRigidbody+" from component in parent: "+target.GetComponentInParent<Rigidbody2D>());
                 var rigidbody = target.GetComponentInParent<Rigidbody2D>();
                 if (rigidbody) {
@@ -140,7 +142,7 @@ namespace CommitmentCards.Scripts
                     {
                         CommitmentCards.Log("player found");
                         DoPushCharData(player.transform.position, otherPlayer, gun.GetAdditionalData().shockBlastBaseForce * (gun.damage / 2));
-                        ApplyBulletEffects(gun, otherPlayer);
+                        ApplyBulletEffects(GetDamageVector(), gun, targetRaycastHit, otherPlayer);
                     }
                 }
                 CommitmentCards.Log("Checking for damageable on collider " + target);
@@ -150,6 +152,7 @@ namespace CommitmentCards.Scripts
                     CommitmentCards.Log("damageable found");
                     DoDamage(damageable);
                 }
+
             }
 
             projectile.projectileColor = Color.black;
@@ -158,9 +161,9 @@ namespace CommitmentCards.Scripts
             projectile.transform.position = (new Vector3(-1000f, -10000f, -1000f));
         }
 
-        private ISet<Collider2D> GetInRangeTargets(Vector2 origin, float range)
+        private ISet<RaycastHit2D> GetInRangeTargets(Vector2 origin, float range)
         {
-            ISet<Collider2D> targets = new HashSet<Collider2D>();
+            ISet<RaycastHit2D> targets = new HashSet<RaycastHit2D>();
             var colliders = Physics2D.OverlapCircleAll(origin, range);
             var playerCollider = player.GetComponent<Collider2D>();
             CommitmentCards.Log("Player collider? " + playerCollider + "At position " + player.transform.position);
@@ -171,12 +174,12 @@ namespace CommitmentCards.Scripts
                 {
                     CommitmentCards.Log("Checking if collider (" + collider + ") for gameobject " + collider.gameObject + " is visible");
                     //Eliminates encountered colliders for anything without a rigidbody except players, which apparently don't have one. Go figure.
-                    var list = Physics2D.RaycastAll(origin, (((Vector2)collider.transform.position) - origin).normalized, range).Select(item => item.collider).Where(item => !item.Equals(playerCollider) && (item.attachedRigidbody || (item.GetComponentInParent<Player>() && item.GetComponentInParent<Player>().playerID != player.playerID))).ToList();
-                    list.ForEach(item => CommitmentCards.Log("raycast item: " + item.gameObject + "is the collider we're looking at? " + (item.Equals(collider))));
-                    if (list.Count > 0 && list[0].Equals(collider))
+                    var list = Physics2D.RaycastAll(origin, (((Vector2)collider.transform.position) - origin).normalized, range).Select(item => item).Where(item => !item.collider.Equals(playerCollider) && (item.collider.attachedRigidbody || (item.collider.GetComponentInParent<Player>() && item.collider.GetComponentInParent<Player>().playerID != player.playerID))).ToList();
+                    list.ForEach(item => CommitmentCards.Log("raycast item: " + item.collider.gameObject + "is the collider we're looking at? " + (item.Equals(collider))));
+                    if (list.Count > 0 && list[0].collider.Equals(collider))
                     {
                         CommitmentCards.Log("Item matched, adding to targets: " + collider.transform.gameObject);
-                        targets.Add(collider);
+                        targets.Add(list[0]);
                     }
                 }
             }
@@ -203,18 +206,72 @@ namespace CommitmentCards.Scripts
         {
       
             CommitmentCards.Log("Doing damage");
-            var totalDamage = 55 * gun.damage * gun.bulletDamageMultiplier / 1.5f;
-            var totalDamageVector = Vector2.up * totalDamage;
-            CommitmentCards.Log("Gun damage: " + gun.damage + " bulletDamageMultiplier " + gun.bulletDamageMultiplier +" Total damage: "+ totalDamage + " transform? " + player.transform);
-            damageable.CallTakeDamage(totalDamageVector, player.transform.position);
-            player.GetComponent<HealthHandler>().Heal(totalDamage * player.GetComponentInChildren<CharacterStatModifiers>().lifeSteal);
+            var totalDamageVector = GetDamageVector();
+            CommitmentCards.Log("Gun damage: " + gun.damage + " bulletDamageMultiplier " + gun.bulletDamageMultiplier +" Total damage: "+ totalDamageVector.y + " transform? " + player.transform);
+            damageable.CallTakeDamage(totalDamageVector, player.transform.position, gun.gameObject, player);
+            player.GetComponent<HealthHandler>().Heal(totalDamageVector.y * player.GetComponentInChildren<CharacterStatModifiers>().lifeSteal);
         }
-
-        private void ApplyBulletEffects(Gun gun, Player otherPlayer)
+        private Vector2 GetDamageVector()
         {
-            // TODO
+            var totalDamage = 55 * gun.damage * gun.bulletDamageMultiplier / 1.5f;
+            return Vector2.up * totalDamage;
         }
 
+        private void ApplyBulletEffects(Vector2 damage, Gun gun, RaycastHit2D targetRaycastHit, Player otherPlayer)
+        {
+            CommitmentCards.Log("Starting apply bullet effects");
+            var hitInfo = RaycastHit2DToHitInfo(targetRaycastHit);
+            foreach(ObjectsToSpawn obj in gun.objectsToSpawn)
+            {
+                CommitmentCards.Log("Looking at object to spawn- effect:" + obj.effect + " addtoprojectile: " + obj.AddToProjectile);
+                if (obj.AddToProjectile && !obj.AddToProjectile.GetComponent<ShockBlastSpawner>())
+                {
+                    CommitmentCards.Log("Addtoprojectile name: " + obj.AddToProjectile.name);
+                    var effect = obj.AddToProjectile.GetComponent<HitEffect>();
+                    if (effect)
+                    {
+                        CommitmentCards.Log("Seeing bullet effect from objectToSpawn.AddToProjectile: " + effect.name);
+                        effect.DealtDamage(damage, false, otherPlayer);
+                    }
+                }
+                else if (obj.effect)
+                {
+                    var effect = obj.effect.GetComponent<HitEffect>();
+                    if (effect)
+                    {
+                        CommitmentCards.Log("Seeing bullet effect from objectToSpawn.effect: " + effect.name);
+                        effect.DealtDamage(damage, false, otherPlayer);
+                    }
+                }
+                else if(!obj.AddToProjectile.GetComponent<ShockBlastSpawner>())
+                {
+                    //Triggers Dazzle, at least, maybe others
+                    CommitmentCards.Log("Attempting object spawn?");
+                    ObjectsToSpawn.SpawnObject(player.transform, hitInfo, obj, player.GetComponent<HealthHandler>(), player.GetComponent<PlayerSkin>(), damage.y);
+                }
+            }
+            projectile.effects.ForEach(it =>
+            {
+                CommitmentCards.Log("Triggering bullet effect from projectile: " + it.name);
+                it.DoHitEffect(hitInfo);
+            });
+            player.GetComponents<HitEffect>().ToList().ForEach(it => {
+                CommitmentCards.Log("Triggering bullet effect from player: " + it.name);
+                it.DealtDamage(damage, false, otherPlayer);
+                });
+        }
+
+
+        private HitInfo RaycastHit2DToHitInfo(RaycastHit2D targetRaycastHit)
+        {
+            var hitInfo = new HitInfo();
+            hitInfo.collider = targetRaycastHit.collider;
+            hitInfo.normal = targetRaycastHit.normal;
+            hitInfo.point = targetRaycastHit.point;
+            hitInfo.rigidbody = targetRaycastHit.rigidbody;
+            hitInfo.transform = targetRaycastHit.transform;
+            return hitInfo;
+        }
 
         private GameObject GenerateVisual()
         {
@@ -228,10 +285,10 @@ namespace CommitmentCards.Scripts
             DontDestroyOnLoad(_shockblastVisual);
             foreach (ParticleSystem parts in _shockblastVisual.GetComponentsInChildren<ParticleSystem>())
             {
-                parts.startColor = Color.cyan;
+                parts.startColor = projectile.projectileColor == Color.black ? Color.cyan : projectile.projectileColor;
                 parts.startLifetime = parts.startLifetime / 2;
             }
-            _shockblastVisual.transform.GetChild(1).GetComponent<LineEffect>().colorOverTime.colorKeys = new GradientColorKey[] { new GradientColorKey(Color.cyan, 0f) };
+            _shockblastVisual.transform.GetChild(1).GetComponent<LineEffect>().colorOverTime.colorKeys = new GradientColorKey[] { new GradientColorKey(projectile.projectileColor == Color.black ? Color.cyan : projectile.projectileColor, 0f) };
             UnityEngine.GameObject.Destroy(_shockblastVisual.transform.GetChild(2).gameObject);
             _shockblastVisual.transform.GetChild(1).GetComponent<LineEffect>().offsetMultiplier = 0f;
             _shockblastVisual.transform.GetChild(1).GetComponent<LineEffect>().playOnAwake = true;
@@ -264,7 +321,7 @@ namespace CommitmentCards.Scripts
         }
         private float CalculateRange(Gun gun)
         {
-            var range = gun.GetAdditionalData().shockBlastRange + ((float)Math.Sqrt(gun.projectileSpeed)*1.2f);
+            var range = gun.GetAdditionalData().shockBlastRange + ((float)Math.Sqrt(gun.projectileSpeed)*1.5f);
             CommitmentCards.Log("gun.projectileSpeed: " + gun.projectileSpeed);
             CommitmentCards.Log("Range: " + range);
             return range;

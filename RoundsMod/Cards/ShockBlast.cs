@@ -22,11 +22,23 @@ namespace CommitmentCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.GetAdditionalData().shockBlastBaseForce += 10000;
-            gun.GetAdditionalData().shockBlastRange += 2.5f;
+            if (gun.GetAdditionalData().shockBlastBaseForce == 0)
+            {
+                gun.GetAdditionalData().shockBlastBaseForce += 10000;
+                gun.GetAdditionalData().shockBlastRange += 2.5f;
+            }
+            else
+            {
+                gun.GetAdditionalData().shockBlastBaseForce += 5000;
+                gun.GetAdditionalData().shockBlastRange += 1.75f;
+            }
             ObjectsToSpawn shockBlast = new ObjectsToSpawn() { };
             shockBlast.AddToProjectile = new GameObject("ShockBlastSpawner", typeof(ShockBlastSpawner));
-            gun.objectsToSpawn = new ObjectsToSpawn[] { shockBlast };
+            CommitmentCards.Log("OBJECTSTOSPAWN at shockblast add");
+            var spawnList = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
+            spawnList.ForEach(it => CommitmentCards.Log("Projectile: "+ it.AddToProjectile+" effect: "+it.effect));
+            spawnList.Add(shockBlast);
+            gun.objectsToSpawn = spawnList.ToArray();
             CommitmentCards.Log($"[{CommitmentCards.ModInitials}][Card] {GetTitle()} has been added to player {player.playerID}.");
             //Edits values on player when card is selected
         }
@@ -43,7 +55,7 @@ namespace CommitmentCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Replace your bullets with a shockwave that damages and repulses enemies! Damage and size scale with bullet damage and projectile speed.";
+            return "Replace your bullets with a shockwave that damages and repulses enemies! Damage and push scale with bullet damage, size scales with projectile speed. Now triggers many on-hit effects!";
         }
         protected override GameObject GetCardArt()
         {
